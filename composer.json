@@ -1,0 +1,59 @@
+{
+  "name": "treehouselabs/event-sourcing",
+  "type": "library",
+  "keywords": [],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mark van Duijker",
+      "email": "mark@treehouse.nl",
+      "role": "Developer"
+    },
+    {
+      "name": "Jeroen Fiege",
+      "email": "jeroen@treehouse.nl",
+      "role": "Developer"
+    },
+    {
+      "name": "Marco Janssen",
+      "email": "marco@treehouse.nl",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.6"
+  },
+  "require-dev": {
+    "treehouselabs/event-store": "1.0.x-dev",
+    "treehouselabs/serialization": "1.0.x-dev",
+    "treehouselabs/message-bus": "*",
+    "treehouselabs/domain": "1.0.x-dev",
+    "arvenil/ninja-mutex": "~0.5",
+    "psr/log": "~1.0",
+    "phpunit/phpunit": "*"
+  },
+  "suggest": {
+    "treehouselabs/event-store": "",
+    "treehouselabs/message-bus": "",
+    "arvenil/ninja-mutex": "To use locking",
+    "psr/log": "To use logging"
+  },
+  "autoload": {
+    "psr-4": {
+      "TreeHouse\\EventSourcing\\": "src/TreeHouse/EventSourcing/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "TreeHouse\\EventSourcing\\Tests\\": "tests/TreeHouse/EventSourcing/Tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
+}
