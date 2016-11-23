@@ -53,10 +53,6 @@ class ProjectorResolver implements SubscriberResolverInterface
     {
         $event = $message;
 
-        if ($message instanceof EventEnvelopeInterface) {
-            $event = $message->getEvent();
-        }
-
         $eventName = $this->eventNameResolver->resolve($event);
 
         if (isset($this->mapping[$eventName])) {
