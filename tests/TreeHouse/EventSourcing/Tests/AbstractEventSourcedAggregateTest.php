@@ -24,6 +24,22 @@ class AbstractEventSourcedAggregateTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     */
+    public function it_updates_from_stream()
+    {
+        $event1 = new VersionedEvent('some-id', new DummyEvent(), 'Dummy', 1);
+        $event2 = new VersionedEvent('some-id', new DummyEvent(), 'Dummy', 2);
+        $aggregate = StubAggregate::createFromStream(new EventStream([$event1]));
+
+        $this->assertEquals(1, $aggregate->getTimesDummied());
+
+        $aggregate->updateFromStream(new EventStream([$event2]));
+
+        $this->assertEquals(2, $aggregate->getTimesDummied());
+    }
+
+    /**
+     * @test
      * @expectedException \InvalidArgumentException
      */
     public function it_throws_on_empty_stream()

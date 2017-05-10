@@ -3,6 +3,7 @@
 namespace TreeHouse\EventSourcing;
 
 use TreeHouse\Domain\AggregateInterface;
+use TreeHouse\EventSourcing\Bridge\SnapshotStore\NullSnapshotStrategy;
 
 class EventSourcingRepository implements EventSourcingRepositoryInterface
 {
@@ -22,15 +23,26 @@ class EventSourcingRepository implements EventSourcingRepositoryInterface
     protected $aggregateClassName;
 
     /**
-     * @param EventStoreInterface $eventStore
-     * @param EventBusInterface   $eventBus
-     * @param string              $aggregateClassName
+     * @var SnapshotStrategyInterface
      */
-    public function __construct(EventStoreInterface $eventStore, EventBusInterface $eventBus, $aggregateClassName)
-    {
+    private $snapshotStrategy;
+
+    /**
+     * @param EventStoreInterface $eventStore
+     * @param EventBusInterface $eventBus
+     * @param string $aggregateClassName
+     * @param SnapshotStrategyInterface|null $snapshotStrategy
+     */
+    public function __construct(
+        EventStoreInterface $eventStore,
+        EventBusInterface $eventBus,
+        $aggregateClassName,
+        SnapshotStrategyInterface $snapshotStrategy = null
+    ) {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->aggregateClassName = $aggregateClassName;
+        $this->snapshotStrategy = $snapshotStrategy ?: new NullSnapshotStrategy();
     }
 
     /**
@@ -38,13 +50,23 @@ class EventSourcingRepository implements EventSourcingRepositoryInterface
      */
     public function load($id)
     {
+        $aggregateClass = $this->aggregateClassName;
+
+        if ($snapshot = $this->snapshotStrategy->load($id)) {
+            $aggregate = $aggregateClass::createFromSnapshot($snapshot);
+
+            $partialStream = $this->eventStore->getPartialStream($id, $snapshot->getAggregateVersion());
+
+            $aggregate->updateFromStream($partialStream);
+
+            return $aggregate;
+        }
+
         $stream = $this->eventStore->getStream($id);
 
         if (0 === count($stream)) {
             return null;
         }
-
-        $aggregateClass = $this->aggregateClassName;
 
         $aggregate = $aggregateClass::createFromStream($stream);
 
@@ -59,6 +81,8 @@ class EventSourcingRepository implements EventSourcingRepositoryInterface
         $versionedEvents = $aggregate->getRecordedEvents();
 
         $this->eventStore->append($versionedEvents);
+
+        $this->snapshotStrategy->store($aggregate);
 
         foreach ($versionedEvents as $event) {
             $this->eventBus->handle($event);

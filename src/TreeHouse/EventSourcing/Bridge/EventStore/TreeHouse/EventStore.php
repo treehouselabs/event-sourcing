@@ -66,15 +66,21 @@ class EventStore implements EventStoreInterface
     }
 
     /**
-     * @param $id
-     *
-     * @return VersionedEvent[]
+     * @inheritdoc
      */
     public function getStream($id)
     {
+        return $this->getPartialStream($id, 0);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPartialStream($id, $fromVersion, $toVersion = null)
+    {
         /* @var Event[] $stream */
         try {
-            $stream = $this->eventStore->getStream($id);
+            $stream = $this->eventStore->getPartialStream($id, $fromVersion, $toVersion);
         } catch (EventStreamNotFoundException $e) {
             return new EventStream();
         }

@@ -6,10 +6,14 @@ use PHPUnit_Framework_TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use TreeHouse\Domain\AggregateInterface;
 use TreeHouse\Domain\EventStream;
+use TreeHouse\EventSourcing\Bridge\SnapshotStore\TreeHouse\BatchSnapshotStrategy;
 use TreeHouse\EventSourcing\EventBusInterface;
 use TreeHouse\EventSourcing\EventSourcingRepository;
 use TreeHouse\EventSourcing\EventStoreInterface;
 use TreeHouse\EventSourcing\VersionedEvent;
+use TreeHouse\EventStore\Event;
+use TreeHouse\SnapshotStore\Snapshot;
+use TreeHouse\SnapshotStore\SnapshotStoreInterface;
 
 class EventSourcingRepositoryTest extends PHPUnit_Framework_TestCase
 {
@@ -27,6 +31,11 @@ class EventSourcingRepositoryTest extends PHPUnit_Framework_TestCase
      * @var EventSourcingRepository
      */
     private $repository;
+
+    /**
+     * @var SnapshotStoreInterface|ObjectProphecy
+     */
+    private $snapshotStore;
 
     public function setUp()
     {
@@ -47,6 +56,57 @@ class EventSourcingRepositoryTest extends PHPUnit_Framework_TestCase
             DummyAggregate::class,
             get_class($this->repository->load('some-id'))
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_loads_from_snapshot_store()
+    {
+        $this->snapshotStore = $this->prophesize(SnapshotStoreInterface::class);
+
+        $snapshotStrategy = new BatchSnapshotStrategy(
+            $this->snapshotStore->reveal(),
+            1
+        );
+
+        $this->repository = new EventSourcingRepository(
+            $this->eventStore->reveal(),
+            $this->eventBus->reveal(),
+            SnapshotableDummyAggregate::class,
+            $snapshotStrategy
+        );
+
+        $this->snapshotStore->load('some-id')->willReturn(
+            new Snapshot(
+                'some-id',
+                1,
+                []
+            )
+        );
+
+        $this->eventStore->getPartialStream('some-id', 1, null)->willReturn(
+            new EventStream(
+                [
+                    new Event(
+                        'some-id',
+                        'some-event',
+                        [],
+                        1,
+                        2
+                    ),
+                ]
+            )
+        );
+
+        $aggregate = $this->repository->load('some-id');
+
+        $this->assertEquals(
+            SnapshotableDummyAggregate::class,
+            get_class($aggregate)
+        );
+
+        $this->assertEquals(2, $aggregate->getVersion());
     }
 
     /**
@@ -81,5 +141,32 @@ class EventSourcingRepositoryTest extends PHPUnit_Framework_TestCase
         $aggregate->clearRecordedEvents()->shouldBeCalled();
 
         $this->repository->save($aggregate->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function it_saves_to_snapshot_store()
+    {
+        $this->snapshotStore = $this->prophesize(SnapshotStoreInterface::class);
+
+        $snapshotStrategy = new BatchSnapshotStrategy(
+            $this->snapshotStore->reveal(),
+            1
+        );
+
+        $this->repository = new EventSourcingRepository(
+            $this->eventStore->reveal(),
+            $this->eventBus->reveal(),
+            SnapshotableDummyAggregate::class,
+            $snapshotStrategy
+        );
+
+        $aggregate = new SnapshotableDummyAggregate();
+
+        $this->snapshotStore->load('some-id')->willReturn(null);
+        $this->snapshotStore->store($aggregate)->shouldBeCalled();
+
+        $this->repository->save($aggregate);
     }
 }

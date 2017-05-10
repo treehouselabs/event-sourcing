@@ -30,7 +30,7 @@
     "treehouselabs/domain": "1.0.x-dev",
     "arvenil/ninja-mutex": "~0.5",
     "psr/log": "~1.0",
-    "phpunit/phpunit": "*"
+    "phpunit/phpunit": "^5.0"
   },
   "suggest": {
     "treehouselabs/event-store": "",
