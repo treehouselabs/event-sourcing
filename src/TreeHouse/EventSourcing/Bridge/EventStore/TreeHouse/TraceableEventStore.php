@@ -31,7 +31,7 @@ class TraceableEventStore implements EventStoreInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function append(EventStream $events)
     {
@@ -47,11 +47,19 @@ class TraceableEventStore implements EventStoreInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getStream($id)
     {
         return $this->eventStore->getStream($id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPartialStream($id, $fromVersion, $toVersion = null)
+    {
+        return $this->eventStore->getPartialStream($id, $fromVersion, $toVersion);
     }
 
     /**

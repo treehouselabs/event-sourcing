@@ -17,4 +17,13 @@ interface EventStoreInterface
      * @return EventStream|VersionedEvent[]
      */
     public function getStream($id);
+
+    /**
+     * @param $id
+     * @param int $fromVersion
+     * @param int|null $toVersion
+     *
+     * @return EventStream|VersionedEvent[]
+     */
+    public function getPartialStream($id, $fromVersion, $toVersion = null);
 }

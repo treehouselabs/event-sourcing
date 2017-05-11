@@ -8,6 +8,8 @@ class StubAggregate extends AbstractEventSourcedAggregate
 {
     private $dummied = false;
 
+    private $timesDummied = 0;
+
     /**
      * @inheritDoc
      */
@@ -24,6 +26,7 @@ class StubAggregate extends AbstractEventSourcedAggregate
     protected function onDummy(DummyEvent $event)
     {
         $this->dummied = true;
+        $this->timesDummied++;
     }
 
     /**
@@ -32,5 +35,13 @@ class StubAggregate extends AbstractEventSourcedAggregate
     public function isDummied()
     {
         return $this->dummied;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimesDummied()
+    {
+        return $this->timesDummied;
     }
 }

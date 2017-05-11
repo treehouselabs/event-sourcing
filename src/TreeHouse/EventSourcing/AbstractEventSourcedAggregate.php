@@ -35,14 +35,22 @@ abstract class AbstractEventSourcedAggregate implements AggregateInterface
 
         $aggregate = new static();
 
-        /** @var VersionedEvent $event */
-        foreach ($stream as $event) {
-            $aggregate->mutate($event);
-        }
-
-        $aggregate->version = $event->getVersion();
+        $aggregate->updateFromStream($stream);
 
         return $aggregate;
+    }
+
+    /**
+     * @param EventStreamInterface $stream
+     */
+    public function updateFromStream(EventStreamInterface $stream)
+    {
+        /** @var VersionedEvent $event */
+        foreach ($stream as $event) {
+            $this->mutate($event);
+
+            $this->version = $event->getVersion();
+        }
     }
 
     /**

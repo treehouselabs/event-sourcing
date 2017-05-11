@@ -87,7 +87,7 @@ class EventStoreTest extends \PHPUnit_Framework_TestCase
      */
     public function it_gets_event_stream()
     {
-        $this->treeHouseEventStore->getStream(self::UUID)->willReturn(
+        $this->treeHouseEventStore->getPartialStream(self::UUID, 0, null)->willReturn(
             new EventStoreEventStream([
                 new Event(self::UUID, 'Dummy', new DummyEvent(), 1, 1),
             ])
@@ -104,7 +104,7 @@ class EventStoreTest extends \PHPUnit_Framework_TestCase
      */
     public function it_gets_empty_event_stream_when_event_stream_not_found_exception()
     {
-        $this->treeHouseEventStore->getStream(self::UUID)->willThrow(
+        $this->treeHouseEventStore->getPartialStream(self::UUID, 0, null)->willThrow(
             new EventStreamNotFoundException(self::UUID)
         );
 
