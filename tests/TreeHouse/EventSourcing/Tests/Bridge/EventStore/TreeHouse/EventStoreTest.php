@@ -42,15 +42,15 @@ class EventStoreTest extends \PHPUnit_Framework_TestCase
     public function it_appends_events()
     {
         $events = new EventStream([
-            new VersionedEvent(self::UUID, new DummyEvent(), 'Dummy', 1),
-            new VersionedEvent(self::UUID, new DummyEvent(), 'Dummy', 2),
+            new VersionedEvent(self::UUID, new DummyEvent(), 'Dummy', 1, $date1 = new \DateTime('2017-05-12 11:03:01')),
+            new VersionedEvent(self::UUID, new DummyEvent(), 'Dummy', 2, $date2 = new \DateTime('2017-05-12 11:03:02')),
         ]);
 
         $this->eventStore->append($events);
 
         $this->treeHouseEventStore->append(new EventStoreEventStream([
-            new Event(self::UUID, 'Dummy', new DummyEvent(), 1, 1),
-            new Event(self::UUID, 'Dummy', new DummyEvent(), 1, 2),
+            new Event(self::UUID, 'Dummy', new DummyEvent(), 1, 1, $date1),
+            new Event(self::UUID, 'Dummy', new DummyEvent(), 1, 2, $date2),
         ]))->shouldHaveBeenCalled();
     }
 
@@ -87,14 +87,16 @@ class EventStoreTest extends \PHPUnit_Framework_TestCase
      */
     public function it_gets_event_stream()
     {
+        $dateTime = new \DateTime('2017-05-12 11:03:01');
+
         $this->treeHouseEventStore->getPartialStream(self::UUID, 0, null)->willReturn(
             new EventStoreEventStream([
-                new Event(self::UUID, 'Dummy', new DummyEvent(), 1, 1),
+                new Event(self::UUID, 'Dummy', new DummyEvent(), 1, 1, $dateTime),
             ])
         );
 
         $this->assertEquals(
-            new EventStream([new VersionedEvent(self::UUID, new DummyEvent(), 'Dummy', 1)]),
+            new EventStream([new VersionedEvent(self::UUID, new DummyEvent(), 'Dummy', 1, $dateTime)]),
             $this->eventStore->getStream(self::UUID)
         );
     }
