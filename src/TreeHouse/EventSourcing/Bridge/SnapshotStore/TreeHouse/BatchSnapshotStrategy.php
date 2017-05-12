@@ -46,6 +46,10 @@ final class BatchSnapshotStrategy implements SnapshotStrategyInterface
             return;
         }
 
+        if (!$aggregate->getRecordedEvents()->count()) {
+            return;
+        }
+
         if ($aggregate->getVersion() % $this->batchSize !== 0) {
             return;
         }
