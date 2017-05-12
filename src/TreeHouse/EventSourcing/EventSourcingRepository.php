@@ -53,7 +53,7 @@ class EventSourcingRepository implements EventSourcingRepositoryInterface
         $aggregateClass = $this->aggregateClassName;
 
         if ($snapshot = $this->snapshotStrategy->load($id)) {
-            $aggregate = $aggregateClass::createFromSnapshot($snapshot);
+            $aggregate = $this->snapshotStrategy->reconstituteAggregate($snapshot);
 
             $partialStream = $this->eventStore->getPartialStream($id, $snapshot->getAggregateVersion());
 

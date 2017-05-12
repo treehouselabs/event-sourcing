@@ -25,4 +25,13 @@ final class NullSnapshotStrategy implements SnapshotStrategyInterface
     {
         // no op
     }
+
+    /**
+     * @param mixed $snapshot
+     *
+     * @return object
+     */
+    public function reconstituteAggregate($snapshot)
+    {
+    }
 }
