@@ -65,8 +65,6 @@ class SnapshotableDummyAggregate implements AggregateInterface, SnapshotableAggr
                 $this->version++
             )
         );
-
-        $this->version++;
     }
 
     /**
