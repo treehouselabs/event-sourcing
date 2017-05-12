@@ -163,6 +163,7 @@ class EventSourcingRepositoryTest extends PHPUnit_Framework_TestCase
         );
 
         $aggregate = new SnapshotableDummyAggregate();
+        $aggregate->doDummy();
 
         $this->snapshotStore->load('some-id')->willReturn(null);
         $this->snapshotStore->store($aggregate)->shouldBeCalled();

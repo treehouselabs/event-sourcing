@@ -5,6 +5,7 @@ namespace TreeHouse\EventSourcing\Tests;
 use TreeHouse\Domain\AggregateInterface;
 use TreeHouse\Domain\EventStreamInterface;
 use TreeHouse\Domain\RecordsEventsTrait;
+use TreeHouse\EventSourcing\VersionedEvent;
 use TreeHouse\SnapshotStore\Snapshot;
 use TreeHouse\SnapshotStore\SnapshotableAggregateInterface;
 
@@ -56,6 +57,15 @@ class SnapshotableDummyAggregate implements AggregateInterface, SnapshotableAggr
 
     public function doDummy()
     {
+        $this->recordEvent(
+            new VersionedEvent(
+                $this->getId(),
+                new DummyEvent(),
+                'Dummy',
+                $this->version++
+            )
+        );
+
         $this->version++;
     }
 

@@ -38,4 +38,23 @@ final class BatchSnapshotStrategyTest extends \PHPUnit_Framework_TestCase
 
         $strategy->store($aggregate); // does call
     }
+
+    /**
+     * @test
+     */
+    public function it_only_stores_when_changed()
+    {
+        $aggregate = new SnapshotableDummyAggregate();
+
+        $this->snapshotStore = $this->prophesize(SnapshotStoreInterface::class);
+
+        $this->snapshotStore->store($aggregate, Argument::cetera())->shouldNotBeCalled();
+
+        $strategy = new BatchSnapshotStrategy(
+            $this->snapshotStore->reveal(),
+            1
+        );
+
+        $strategy->store($aggregate); // does not call because it has no recorded events
+    }
 }
