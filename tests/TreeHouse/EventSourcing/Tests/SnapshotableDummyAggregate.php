@@ -90,4 +90,14 @@ class SnapshotableDummyAggregate implements AggregateInterface, SnapshotableAggr
     {
         return [];
     }
+
+    /**
+     * Return checksum hash (like md5) of this class
+     *
+     * @return string
+     */
+    public static function checksum(): string
+    {
+        return md5_file(__FILE__);
+    }
 }
