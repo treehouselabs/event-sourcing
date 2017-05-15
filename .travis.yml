@@ -8,7 +8,7 @@ cache:
 language: php
 php:
   - 7.0
-  - hhvm
+  - 7.1
 
 matrix:
   fast_finish: true
