@@ -34,7 +34,17 @@ final class BatchSnapshotStrategy implements SnapshotStrategyInterface
      */
     public function load($aggregateId)
     {
-        return $this->snapshotStore->load($aggregateId);
+        $snapshot = $this->snapshotStore->load($aggregateId);
+
+        if ($snapshot) {
+            $aggregateClass = $snapshot->getClass();
+
+            if ($snapshot->getChecksum() !== $aggregateClass::checksum()) {
+                return null;
+            }
+        }
+
+        return $snapshot;
     }
 
     /**
@@ -55,5 +65,15 @@ final class BatchSnapshotStrategy implements SnapshotStrategyInterface
         }
 
         $this->snapshotStore->store($aggregate);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function reconstituteAggregate($snapshot)
+    {
+        $aggregateClass = $snapshot->getClass();
+
+        return $aggregateClass::createFromSnapshot($snapshot);
     }
 }

@@ -8,21 +8,24 @@ use TreeHouse\EventSourcing\SnapshotStrategyInterface;
 final class NullSnapshotStrategy implements SnapshotStrategyInterface
 {
     /**
-     * @param mixed $aggregateId
-     *
-     * @return null
+     * @inheritdoc
      */
     public function load($aggregateId)
     {
     }
 
     /**
-     * @param mixed $aggregate
-     *
-     * @return void
+     * @inheritdoc
      */
     public function store($aggregate)
     {
         // no op
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function reconstituteAggregate($snapshot)
+    {
     }
 }

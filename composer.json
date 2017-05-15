@@ -34,7 +34,8 @@
     "phpunit/phpunit": "^5.0"
   },
   "conflicts": {
-    "treehouselabs/event-store": "<1.1"
+    "treehouselabs/event-store": "<1.1",
+    "treehouselabs/snapshot-store": "<2.0"
   },
   "suggest": {
     "treehouselabs/event-store": "",

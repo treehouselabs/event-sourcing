@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace TreeHouse\EventSourcing;
 
-use TreeHouse\SnapshotStore\SnapshotableAggregateInterface;
-
 interface SnapshotStrategyInterface
 {
     /**
-     * @param mixed $aggregateId
+     * Returns the snapshot
+     *
+     * @param string $aggregateId
      *
      * @return mixed
      */
@@ -17,9 +17,20 @@ interface SnapshotStrategyInterface
     /**
      * Store snapshot when applicable
      *
-     * @param SnapshotableAggregateInterface $aggregate
+     * @param object $aggregate
      *
      * @return void
      */
     public function store($aggregate);
+
+    /**
+     * Creats the aggregate based on the snapshot.
+     *
+     * Gets called after the `load` method.
+     *
+     * @param mixed $snapshot The result of the `load` method
+     *
+     * @return object
+     */
+    public function reconstituteAggregate($snapshot);
 }

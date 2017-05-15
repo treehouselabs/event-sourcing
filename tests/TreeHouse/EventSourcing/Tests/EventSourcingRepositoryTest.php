@@ -81,7 +81,9 @@ class EventSourcingRepositoryTest extends PHPUnit_Framework_TestCase
             new Snapshot(
                 'some-id',
                 1,
-                []
+                [],
+                md5_file(__DIR__ . '/SnapshotableDummyAggregate.php'),
+                SnapshotableDummyAggregate::class
             )
         );
 
