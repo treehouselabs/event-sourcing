@@ -68,9 +68,7 @@ final class BatchSnapshotStrategy implements SnapshotStrategyInterface
     }
 
     /**
-     * @param mixed $snapshot
-     *
-     * @return object
+     * @inheritdoc
      */
     public function reconstituteAggregate($snapshot)
     {
